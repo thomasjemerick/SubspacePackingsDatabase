@@ -35,5 +35,6 @@ Note that ETF labels are subject to change, for the following two reasons.
 
 Files associated to an ETF label are as follows.
     1. "eft_dxn_alpha_trip.gos" or "etf_dxn_ALPHAdim_trip.gos" is a text file consisting of a list of real numbers that specifies the ETF numerically in the Game of Sloanes format.
-    2. "eft_dxn_alpha_trip.exa" or "etf_dxn_ALPHAdim_trip.exa" is a text file consisting of data specifying the ETF exactly. The structure of this file is TBD.
+    2. "eft_dxn_alpha_trip.exa" or "etf_dxn_ALPHAdim_trip.exa" is a text file consisting of data specifying the ETF exactly by specifying the position of every unique entry in the first slice of the triple product tensor.
     3. "eft_dxn_alpha_trip.inv" or "etf_dxn_ALPHAdim_trip.inv" is a text file specifying certain invariants of the ETF. The structure of this file is TBD.
+    4. "eft_dxn_alpha_trip.tp" or "etf_dxn_ALPHAdim_trip.tp" is a text file consisting of data specifying the ETF exactly by specifying the position of every unique entry in the entire triple product tensor.
