@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     14687,        380]
-NotebookOptionsPosition[     14143,        364]
-NotebookOutlinePosition[     14542,        380]
-CellTagsIndexPosition[     14499,        377]
+NotebookDataLength[     21277,        541]
+NotebookOptionsPosition[     20722,        525]
+NotebookOutlinePosition[     21131,        541]
+CellTagsIndexPosition[     21088,        538]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -162,7 +162,7 @@ Cell[BoxData[
    3.9654285420969887`*^9}, {3.9826148849926453`*^9, 3.982614885911158*^9}, {
    3.9826149705092163`*^9, 3.982615072540613*^9}, {3.982615532216975*^9, 
    3.982615560929021*^9}},
- CellLabel->"In[47]:=",ExpressionUUID->"4522325e-abc4-49b3-99c0-cffb30cf489f"],
+ CellLabel->"In[2]:=",ExpressionUUID->"4522325e-abc4-49b3-99c0-cffb30cf489f"],
 
 Cell[BoxData[
  RowBox[{
@@ -344,7 +344,155 @@ Cell[BoxData[
         RowBox[{
          RowBox[{"NormalDistribution", "[", "]"}], ",", 
          RowBox[{"{", 
-          RowBox[{"d", ",", "n"}], "}"}]}], "]"}], "I"}]}]}], 
+          RowBox[{"d", ",", "n"}], "}"}]}], "]"}], "I"}]}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"ETF", " ", "conditions"}], " ", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"tightnessIdealGenerators", "=", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"PhiVar", "[", 
+          RowBox[{"[", 
+           RowBox[{"All", ",", "k"}], "]"}], "]"}], "-", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"d", "/", "n"}], ")"}], 
+          RowBox[{"Sum", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"PhiVar", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"All", ",", "j"}], "]"}], "]"}], "\[Conjugate]"}], ".", 
+               RowBox[{"PhiVar", "[", 
+                RowBox[{"[", 
+                 RowBox[{"All", ",", "k"}], "]"}], "]"}]}], ")"}], 
+             RowBox[{"PhiVar", "[", 
+              RowBox[{"[", 
+               RowBox[{"All", ",", "j"}], "]"}], "]"}]}], ",", 
+            RowBox[{"{", 
+             RowBox[{"j", ",", "1", ",", "n"}], "}"}]}], "]"}]}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{"k", ",", "1", ",", "n"}], "}"}]}], "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"equiangularWelchIdealGenerators", "=", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"PhiVar", "[", 
+              RowBox[{"[", 
+               RowBox[{"All", ",", "i"}], "]"}], "]"}], "\[Conjugate]"}], ".", 
+            RowBox[{"PhiVar", "[", 
+             RowBox[{"[", 
+              RowBox[{"All", ",", "j"}], "]"}], "]"}]}], ")"}], 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"PhiVar", "[", 
+              RowBox[{"[", 
+               RowBox[{"All", ",", "j"}], "]"}], "]"}], "\[Conjugate]"}], ".", 
+            RowBox[{"PhiVar", "[", 
+             RowBox[{"[", 
+              RowBox[{"All", ",", "i"}], "]"}], "]"}]}], ")"}]}], "-", 
+         RowBox[{
+          RowBox[{"Welch", "[", 
+           RowBox[{"d", ",", "n"}], "]"}], "^", "2"}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "1", ",", "n"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"j", ",", 
+          RowBox[{"i", "+", "1"}], ",", "n"}], "}"}]}], "]"}], "]"}]}], ";"}],
+    "\[IndentingNewLine]", 
+   RowBox[{"unitNormIdealGenerators", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"PhiVar", "[", 
+          RowBox[{"[", 
+           RowBox[{"All", ",", "i"}], "]"}], "]"}], "\[Conjugate]"}], ".", 
+        RowBox[{"PhiVar", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "i"}], "]"}], "]"}]}], "-", "1"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "n"}], "}"}]}], "]"}]}], ";", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+     "The", " ", "functions", " ", "below", " ", "attempt", " ", "to", " ", 
+      "refine", " ", "the", " ", "precision", " ", "of", " ", "ETFs", " ", 
+      "using", " ", "the", " ", "equations", " ", "an", " ", "ETF", " ", 
+      RowBox[{"satisfies", ".", " ", "They"}], " ", "currently", " ", "do", " ",
+       "not", " ", "work", " ", "very", " ", 
+      RowBox[{"well", ".", " ", "You"}], " ", "should", " ", "use", " ", 
+      "MinPhiQNp", " ", "with", " ", "p"}], "=", 
+     RowBox[{"4", " ", 
+      RowBox[{
+       RowBox[{"instead", " ", "[", 
+        RowBox[{
+        "or", " ", "figure", " ", "out", " ", "how", " ", "to", " ", 
+         "improve", " ", "this"}], "]"}], "."}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"etfRefine1", "[", 
+      RowBox[{"Phi0_", ",", "NN_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "idealGenerators", "}"}], ",", 
+       RowBox[{
+        RowBox[{"idealGenerators", "=", 
+         RowBox[{"Join", "[", 
+          RowBox[{
+          "unitNormIdealGenerators", ",", "equiangularWelchIdealGenerators", ",",
+            "tightnessIdealGenerators"}], "]"}]}], ";", 
+        RowBox[{"FindRoot", "[", 
+         RowBox[{
+          RowBox[{"idealGenerators", ".", 
+           RowBox[{"RandomInteger", "[", 
+            RowBox[{"10", ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Length", "[", "idealGenerators", "]"}], ",", 
+               RowBox[{"2", "d", " ", "n"}]}], "}"}]}], "]"}]}], ",", 
+          RowBox[{"varcons", "[", "Phi0", "]"}], ",", 
+          RowBox[{"WorkingPrecision", "->", "NN"}]}], "]"}]}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"etfRefine", "[", 
+      RowBox[{"Phi0_", ",", "NN_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "idealGenerators", "}"}], ",", 
+       RowBox[{
+        RowBox[{"idealGenerators", "=", 
+         RowBox[{"Join", "[", 
+          RowBox[{
+          "unitNormIdealGenerators", ",", "equiangularWelchIdealGenerators"}],
+           "]"}]}], ";", 
+        RowBox[{"FindRoot", "[", 
+         RowBox[{
+          RowBox[{"idealGenerators", ".", 
+           RowBox[{"RandomInteger", "[", 
+            RowBox[{"10", ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Length", "[", "idealGenerators", "]"}], ",", 
+               RowBox[{"2", "d", " ", "n"}]}], "}"}]}], "]"}]}], ",", 
+          RowBox[{"varcons", "[", "Phi0", "]"}], ",", 
+          RowBox[{"WorkingPrecision", "->", "NN"}]}], "]"}]}]}], "]"}]}], 
     ";"}]}]}]], "Input",
  CellChangeTimes->{{3.844855706122019*^9, 3.844855778712083*^9}, {
    3.844855813337528*^9, 3.8448560937556953`*^9}, {3.844856126014968*^9, 
@@ -359,12 +507,25 @@ Cell[BoxData[
    3.960559576765646*^9}, {3.965428549658955*^9, 3.965428603418026*^9}, {
    3.9826151080827312`*^9, 3.982615157274864*^9}, {3.982615603338718*^9, 
    3.9826156272558203`*^9}, {3.9826221019371433`*^9, 
-   3.9826221290875607`*^9}},ExpressionUUID->"518e19c8-d818-4936-aafd-\
+   3.9826221290875607`*^9}, {3.9864781205006733`*^9, 3.986478171884297*^9}, {
+   3.98647822070879*^9, 3.9864783160550537`*^9}, {3.9864783722306013`*^9, 
+   3.986478417134634*^9}, {3.986478590112789*^9, 3.986478697161685*^9}, {
+   3.986478802762697*^9, 3.986478891635291*^9}, {3.986479057924822*^9, 
+   3.986479117243457*^9}, {3.986479159471636*^9, 3.986479162807728*^9}, {
+   3.986479197343857*^9, 3.986479206606914*^9}, {3.986479286232107*^9, 
+   3.986479286471656*^9}, {3.986479693931521*^9, 3.986479703333715*^9}, {
+   3.986479788935143*^9, 3.9864798388284273`*^9}, {3.986479886006815*^9, 
+   3.986479895373048*^9}, {3.98648000663023*^9, 3.986480098846896*^9}, {
+   3.98648058259461*^9, 3.986480601995454*^9}, {3.986480695908677*^9, 
+   3.986480696286241*^9}, 3.9864807433813868`*^9, {3.986481319130274*^9, 
+   3.986481320349614*^9}, {3.986483715375692*^9, 3.986483723367296*^9}, 
+   3.986487668857422*^9, {3.986488557321477*^9, 
+   3.986488668634819*^9}},ExpressionUUID->"518e19c8-d818-4936-aafd-\
 f4b8f784d465"]
 },
 WindowSize->{1106.25, 641.25},
-WindowMargins->{{Automatic, 36.75}, {Automatic, 60}},
-FrontEndVersion->"14.3 for Linux x86 (64-bit) (July 8, 2025)",
+WindowMargins->{{Automatic, -1810.5}, {109.5, Automatic}},
+FrontEndVersion->"14.2 for Linux x86 (64-bit) (December 26, 2024)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"08a9d31c-595e-4a97-997c-726c495795a6"
 ]
@@ -379,9 +540,9 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 1078, 23, 69, "Input",ExpressionUUID->"f6099ae2-6779-4eed-b341-593c6ceeccdc"],
-Cell[1639, 45, 4484, 119, 182, "Input",ExpressionUUID->"4522325e-abc4-49b3-99c0-cffb30cf489f"],
-Cell[6126, 166, 8013, 196, 515, "Input",ExpressionUUID->"518e19c8-d818-4936-aafd-f4b8f784d465"]
+Cell[558, 20, 1078, 23, 70, "Input",ExpressionUUID->"f6099ae2-6779-4eed-b341-593c6ceeccdc"],
+Cell[1639, 45, 4483, 119, 184, "Input",ExpressionUUID->"4522325e-abc4-49b3-99c0-cffb30cf489f"],
+Cell[6125, 166, 14593, 357, 810, "Input",ExpressionUUID->"518e19c8-d818-4936-aafd-f4b8f784d465"]
 }
 ]
 *)
