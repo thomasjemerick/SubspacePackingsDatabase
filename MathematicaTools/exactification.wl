@@ -11,7 +11,7 @@ mf=MatrixForm;mp=MatrixPlot;
 positionSmallest[l_]:=FirstPosition[l,Min[l]][[1]]
 (* Exactification using elementary symmetric polynomials and RootApproximant *)
 (* If optional variable ratcoeffs is set to True, instead use Rationalize on coefficeints *)
-exactifyTuple[\[Alpha]_,ratcoeffs_:False]:=Module[{deg,ESP,exactESP,f,roots},
+exactifyTuple[\[Alpha]_,ratcoeffs_:False]:=Module[{deg,ESP,X,exactESP,f,roots},
 deg=Length[\[Alpha]];
 ESP=CoefficientList[Expand[Times@@(X-\[Alpha])],X];
 If[ratcoeffs,exactESP=Rationalize[#,10^(-0.75Precision[\[Alpha][[1]]])]&/@ESP,exactESP=RootApproximant/@ESP];
