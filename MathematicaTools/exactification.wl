@@ -10,17 +10,23 @@ mf=MatrixForm;mp=MatrixPlot;
 (* Position of the minimum element of a list of distinct real numbers *)
 positionSmallest[l_]:=FirstPosition[l,Min[l]][[1]]
 (* Exactification using elementary symmetric polynomials and RootApproximant *)
-(* If optional variable ratcoeffs is set to True, instead use Rationalize on coefficeints *)
-exactifyTuple[\[Alpha]_,ratcoeffs_:False]:=Module[{deg,ESP,X,exactESP,f,roots},
+(* If "RationalCoefficients" is set to True, instead use Rationalize on coefficeints *)
+(* "SimplificationMethod" is the function used to simplfy the algebraic numbers to be output by exactifyTuple *)
+(* If "NumericalRefinement" is set to true, instead of simplifying, approximate to higher precision and then apply RootApproximant again *)
+(* Increase the precision by a factor of "RefinementFactor" when using "NumericalRefinement" *)
+Options[exactifyTuple]={"RationalCoefficients"->False,"SimplificationMethod"->RootReduce,"NumericalRefinement"->False,"RefinementFactor"->10};
+exactifyTuple[\[Alpha]_,OptionsPattern[]]:=Module[{deg,ESP,X,exactESP,f,roots},
 deg=Length[\[Alpha]];
 ESP=CoefficientList[Expand[Times@@(X-\[Alpha])],X];
-If[ratcoeffs,exactESP=Rationalize[#,10^(-0.75Precision[\[Alpha][[1]]])]&/@ESP,exactESP=RootApproximant/@ESP];
+If[OptionValue["RationalCoefficients"],exactESP=Rationalize[#,10^(-0.75Precision[\[Alpha][[1]]])]&/@ESP,exactESP=RootApproximant/@ESP];
 f=Plus@@(exactESP . #^Range[0,deg])&;
-roots=Table[RootReduce[Root[f,j]],{j,1,deg}];
+roots=If[OptionValue["NumericalRefinement"],Table[RootApproximant[N[Root[f,j],OptionValue["RefinementFactor"]*N[Precision[Plus@@\[Alpha]]]]],{j,1,deg}],Table[OptionValue["SimplificationMethod"][Root[f,j]],{j,1,deg}]];
 Table[roots[[positionSmallest[Abs/@(\[Alpha][[j]]-roots)]]],{j,1,deg}]
 ]
 (* Converts an array to a list of distinct elements -> array positions *)
-arrayPositionMap[l_,tolerance_:10^(-6)]:=Module[{elts,positions,level},
+Options[arrayPositionMap]={"Tolerance"->10^(-6)};
+arrayPositionMap[l_,OptionsPattern[]]:=Module[{elts,positions,level,tolerance},
+tolerance=OptionValue["Tolerance"];
 elts=DeleteDuplicates[Flatten[l],Abs[#1-#2]<tolerance&];
 level=Length[Dimensions[l]];
 positions=Table[Position[l,_?(Abs[#-elts[[j]]]<tolerance&),level],{j,1,Length[elts]}];
@@ -29,14 +35,16 @@ Thread[positions->elts]
 (* Covert an array position map to a standard array *)
 arrayFromPositionMap[PM_]:=Normal[SparseArray[Flatten[Thread/@PM,1]]];
 (* Exactify a position map of triple products, taking advantage of possible Galois conjugates *)
-exactifyTPPM[TPPM_]:=Module[{elts,positions,exactelts},
+Options[exactifyTPPM]={"RationalCoefficients"->False,"SimplificationMethod"->RootReduce,"NumericalRefinement"->False,"RefinementFactor"->10};
+exactifyTPPM[TPPM_,opts:OptionsPattern[]]:=Module[{elts,positions,exactelts},
 elts=#[[-1]]&/@TPPM;
 positions=#[[1]]&/@TPPM;
-exactelts=exactifyTuple[elts];
+exactelts=exactifyTuple[elts,opts];
 Thread[positions->exactelts]
 ]
 (* Exactify a triple product tensor, taking advantage of possible Galois conjugates *)
-exactifyTP[T_,tolerance_:10^(-6)]:=arrayFromPositionMap[exactifyTPPM[arrayPositionMap[T,tolerance]]]
+Options[exactifyTP]={"Tolerance"->10^(-6),"RationalCoefficients"->False,"SimplificationMethod"->RootReduce,"NumericalRefinement"->False,"RefinementFactor"->10};
+exactifyTP[T_,opts:OptionsPattern[]]:=arrayFromPositionMap[exactifyTPPM[arrayPositionMap[T,"Tolerance"->OptionValue["Tolerance"]],FilterRules[{opts,Options[exactifyTP]},Options[exactifyTPPM]]]]
 (* Exactify a position map of triple products naively using RootApproximant *)
 exactifyTPPMalt[TPPM_]:=Module[{elts,positions,exactelts},
 elts=#[[-1]]&/@TPPM;
@@ -45,4 +53,5 @@ exactelts=RootApproximant/@elts;
 Thread[positions->exactelts]
 ]
 (* Exactify a triple product tensor naively using RootApproximant *)
-exactifyTPalt[T_,tolerance_:10^(-6)]:=arrayFromPositionMap[exactifyTPPMalt[arrayPositionMap[T,tolerance]]]
+Options[exactifyTPalt]={"Tolerance"->10^(-6)}
+exactifyTPalt[T_,OptionsPattern[]]:=arrayFromPositionMap[exactifyTPPMalt[arrayPositionMap[T,OptionValue["Tolerance"]]]]
