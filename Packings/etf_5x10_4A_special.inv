@@ -1,4 +1,4 @@
-LABEL = {5x10_a_4.inv}
+LABEL = {5x10_4A_special}
 TAGS = {}
 NUMBER_TPS = {4}
 COHERENCE_APPROX = {0.333333333333333}
