@@ -28,15 +28,12 @@ Transpose[{Flatten[Table[b[i,j],{i,1,d},{j,1,n}]],Im[Flatten[Phi0]]}]
 ]
 (* minimize p-frame potential with QuasiNewton *)
 (* vector list, p, options *)
-(* BUG: The default option value MaxIterations->1000 is not passed to FindMinimum unless it is explicitly included in the function call to MinPhiQNp. Fix this if you know how. *)
-Options[MinPhiQNp]={MaxIterations->1000,WorkingPrecision->MachinePrecision};
 MinPhiQNp[Phi0_,p_,opts:OptionsPattern[]]:=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],
-opts,Method->"QuasiNewton"]
+opts,Method->"QuasiNewton",MaxIterations->1000,WorkingPrecision->MachinePrecision]
 (* minimize coherence with PrincipalAxis [OFTEN FAILS] *)
 (* vector list, options *)
-Options[MinPhiQNp]={MaxIterations->Automatic,WorkingPrecision->MachinePrecision};
 MinPhiPA[Phi0_,opts:OptionsPattern[]]:=FindMinimum[Coherence[PhiVar],varcons[Phi0],
-opts,Method->"PrincipalAxis"]
+opts,Method->"PrincipalAxis",MaxIterations->Automatic,WorkingPrecision->MachinePrecision]
 (* random seed vector list *)
 rand[]:=RandomReal[NormalDistribution[],{d,n}]+RandomReal[NormalDistribution[],{d,n}]I
 (* ETF conditions *)
