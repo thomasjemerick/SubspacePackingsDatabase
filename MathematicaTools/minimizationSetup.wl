@@ -27,21 +27,13 @@ varcons[Phi0_]:=Join[Transpose[{Flatten[Table[a[i,j],{i,1,d},{j,1,n}]],Re[Flatte
 Transpose[{Flatten[Table[b[i,j],{i,1,d},{j,1,n}]],Im[Flatten[Phi0]]}]
 ]
 (* minimize p-frame potential with QuasiNewton *)
-(* vector list, p, precision *)
-MinPhiQNp[Phi0_,p_,NN_]:=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],
-Method->"QuasiNewton",MaxIterations->1000,WorkingPrecision->NN]
-(* vector list, p, precision, maximum allowed iterations *)
-MinPhiQNp[Phi0_,p_,NN_,it_]:=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],
-Method->"QuasiNewton",MaxIterations->it,WorkingPrecision->NN]
-(* vector list, p *)
-(* using MachinePrecision *)
-MinPhiQNpcheap[Phi0_,p_]:=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],Method->"QuasiNewton",MaxIterations->1000]
+(* vector list, p, options *)
+MinPhiQNp[Phi0_,p_,opts:OptionsPattern[]]:=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],
+opts,Method->"QuasiNewton",MaxIterations->1000,WorkingPrecision->MachinePrecision]
 (* minimize coherence with PrincipalAxis [OFTEN FAILS] *)
-(* vector list, precision *)
-MinPhiPA[Phi0_,NN_]:=FindMinimum[Coherence[PhiVar],varcons[Phi0],Method->"PrincipalAxis",WorkingPrecision->NN]
-(* minimize coherence with PrincipalAxis [OFTEN FAILS] *)
-(* vector list, precision, maximum allowed iterations *)
-MinPhiPA[Phi0_,NN_,it_]:=FindMinimum[Coherence[PhiVar],varcons[Phi0],Method->"PrincipalAxis",MaxIterations->it,WorkingPrecision->NN]
+(* vector list, options *)
+MinPhiPA[Phi0_,opts:OptionsPattern[]]:=FindMinimum[Coherence[PhiVar],varcons[Phi0],
+opts,Method->"PrincipalAxis",MaxIterations->Automatic,WorkingPrecision->MachinePrecision]
 (* random seed vector list *)
 rand[]:=RandomReal[NormalDistribution[],{d,n}]+RandomReal[NormalDistribution[],{d,n}]I
 (* ETF conditions *)
@@ -51,11 +43,9 @@ Table[(PhiVar[[All,i]]\[Conjugate] . PhiVar[[All,j]])(PhiVar[[All,j]]\[Conjugate
 unitNormIdealGenerators=Table[PhiVar[[All,i]]\[Conjugate] . PhiVar[[All,i]]-1,{i,1,n}];
 (* The functions below attempt to refine the precision of ETFs using the equations an ETF satisfies.
 They currently do not work very well. You should use MinPhiQNp with p=4 instead [or figure out how to improve this]. *)
-etfRefine1[Phi0_,NN_]:=Module[{idealGenerators},
-idealGenerators=Join[unitNormIdealGenerators,equiangularWelchIdealGenerators,tightnessIdealGenerators];
-FindRoot[idealGenerators . RandomInteger[10,{Length[idealGenerators],2d n}],varcons[Phi0],WorkingPrecision->NN]
-]
-etfRefine[Phi0_,NN_]:=Module[{idealGenerators},
-idealGenerators=Join[unitNormIdealGenerators,equiangularWelchIdealGenerators];
-FindRoot[idealGenerators . RandomInteger[10,{Length[idealGenerators],2d n}],varcons[Phi0],WorkingPrecision->NN]
+Options[etfRefine]={WorkingPrecision->MachinePrecision,TightnessIdealGenerators->False};
+etfRefine[Phi0_,OptionsPattern[]]:=Module[{idealGenerators,TID},
+TID=If[OptionValue[TightnessIdealGenerators],tightnessIdealGenerators,{}];
+idealGenerators=Join[unitNormIdealGenerators,equiangularWelchIdealGenerators,TID];
+FindRoot[idealGenerators . RandomInteger[10,{Length[idealGenerators],2d n}],varcons[Phi0],WorkingPrecision->OptionValue[WorkingPrecision]]
 ]

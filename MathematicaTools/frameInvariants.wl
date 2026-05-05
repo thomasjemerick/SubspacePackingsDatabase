@@ -5,9 +5,11 @@
 
 
 (* List of distict triple products, including degenerate ones *)
-distinctTPfromSO[Phi_,tolerance_:10^(-6)]:=DeleteDuplicates[Chop[Flatten[TPfromSO[Phi]]],Abs[#1-#2]<tolerance&];
+Options[distinctTPfromSO]={Tolerance->10^(-6)};
+distinctTPfromSO[Phi_,OptionsPattern[]]:=DeleteDuplicates[Chop[Flatten[TPfromSO[Phi]]],Abs[#1-#2]<OptionValue[Tolerance]&];
 (* Number of distict triple products, including degenerate ones *)
-numberTPfromSO[Phi_,tolerance_:10^(-6)]:=Length[distinctTPfromSO[Phi,tolerance]];
+Options[numberTPfromSO]={Tolerance->10^(-6)};
+numberTPfromSO[Phi_,OptionsPattern[]]:=Length[distinctTPfromSO[Phi,OptionValue[Tolerance]]];
 (* Moments [sum of powers of triple products] *)
 momentfromSO[Phi_,m_]:=Plus@@(Flatten[TPfromSO[Phi]]^m);
 (* Nondiagonal moments [sum of powers of totally nondiagonal triple products] *)

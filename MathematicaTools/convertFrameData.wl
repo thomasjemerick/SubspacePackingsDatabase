@@ -25,23 +25,26 @@ TPfromGM[G_]:=Module[{n=Length[G]},Table[G[[i,j]]G[[j,k]]G[[k,i]],{i,1,n},{j,1,n
 (* Triple product tensor from vector list *)
 TPfromSO[Phi_]:=TPfromGM[GMfromSO[Phi]]
 (* Vector list from Gram matrix *)
-SOfromGM[G_,tolerance_:10^(-6)]:=Module[{d,U,\[CapitalLambda],V},
-d=MatrixRank[G,Tolerance->tolerance];
+Options[SOfromGM]={Tolerance->10^(-6)};
+SOfromGM[G_,OptionsPattern[]]:=Module[{d,U,\[CapitalLambda],V},
+d=MatrixRank[G,Tolerance->OptionValue[Tolerance]];
 {U,\[CapitalLambda],V}=SingularValueDecomposition[G,UpTo[d]];
 (U . Sqrt[\[CapitalLambda]])\[ConjugateTranspose]
 ]
 (* Gram matrix from triple product tensor *)
 (* currently implemented when SO has a vector not orthogonal to any other vector *)
-GMfromTP[T_,tolerance_:10^(-6)]:=Module[{k},
+Options[GMfromTP]={Tolerance->10^(-6)};
+GMfromTP[T_,OptionsPattern[]]:=Module[{k},
 For[k=1,k<=n,k++,
-If[!AnyTrue[Flatten@T[[All,k,k]],Abs[#]<tolerance&],Break[]];
+If[!AnyTrue[Flatten@T[[All,k,k]],Abs[#]<OptionValue[Tolerance]&],Break[]];
 ];
 If[k>n,k=1];
 Table[T[[i,j,k]]/(T[[i,k,k]]T[[j,k,k]])^(1/2),{i,1,Length[T]},{j,1,Length[T]}]
 ]
 (* Vector list from triple product tensor *)
 (* currently implemented when SO has a vector not orthogonal to any other vector *)
-SOfromTP[T_,tolerance_:10^(-6)]:=SOfromGM[GMfromTP[T],tolerance]
+Options[SOfromTP]={Tolerance->10^(-6)};
+SOfromTP[T_,OptionsPattern[]]:=SOfromGM[GMfromTP[T],OptionValue[Tolerance]]
 (* Faithful matrix plot for synthesis operator or Gram matrix *)
 FrameVisualize[M_]:=MatrixPlot[Hue[(Arg[#]+Pi)/(2Pi),Abs[#]]&/@#&/@M,Frame->False]
 (* Game of Sloanes representation of a synthesis operator *)

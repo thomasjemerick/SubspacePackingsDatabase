@@ -11,19 +11,20 @@ extractDimensions[str_String]:=ToExpression[StringCases[str,RegularExpression["(
 (* Function to import Game of Sloanes formatted (.gos) text file of packing *)
 (* Imports at MachinePrecision unless precision is specified *)
 (* Returns transpose of short, fat matrix *)
-importPacking[d_,n_,filename_String,precision_:MachinePrecision]:=Module[{plist},
-plist=SetPrecision[Import[filename,"List"],precision];
+Options[importPacking]={Precision->MachinePrecision};
+importPacking[d_,n_,filename_String,OptionsPattern[]]:=Module[{plist},
+plist=SetPrecision[Import[filename,"List"],OptionValue[Precision]];
 SOfromGoS[plist,{d,n}]
 ]
-importPacking[filename_String,precision_:MachinePrecision]:=Module[{d,n},
+importPacking[filename_String,OptionsPattern[]]:=Module[{d,n},
 {d,n}=extractDimensions[filename];
-importPacking[d,n,filename,precision]
+importPacking[d,n,filename,OptionValue[Precision]]
 ]
 (* Export .gos file *)
 exportPacking[Phi_,filename_String]:=Export[filename,GoSfromSO[Phi],"List"]
 exportPacking[Phi_,labels_List]:=Module[{d,n,numberTP,filename},
 {d,n}=ToString/@Dimensions[Phi];
-numberTP=ToString@numberTPfromSO@N[phi];
+numberTP=ToString@numberTPfromSO@N[Phi];
 filename=labels[[1]]<>"_"<>d<>"x"<>n<>"_"<>numberTP<>labels[[2]]<>".gos";
 exportPacking[Phi,filename]
 ]/;MatchQ[labels,{_String,_String}]
