@@ -42,7 +42,7 @@ cd /path/to/your/project
 
 - Run the script:
 ```bash
-sage SymPGSKopp.sage
+sage SymPGoSKopp.sage
 ```
 
 - Enter `d` and `n` when prompted
