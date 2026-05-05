@@ -1,0 +1,216 @@
+## ================== Symmetry Groups Finder ===================== 
+# @ayan or @piquark or @ayan314 : comments by/for ayan. 
+# Use @ayan@user : comments from user to ayan. 
+# I am still editing this script and fixing bugs...@ayan
+# 
+from sage.all import *
+import numpy as np
+
+import os
+
+
+
+
+# -----------------------------
+# 0. Ask for input (Change here for different path or file format)
+# -----------------------------
+d = int(input("Enter d: "))
+n = int(input("Enter n: "))
+tol = 1e-5
+folder = "Packings"
+prefix = f"etf_{d}x{n}"
+
+
+
+# -----------------------------
+# 1. Find matching file
+# -----------------------------
+matches = []
+
+for file in os.listdir(folder):
+    if file.startswith(prefix) and file.endswith(".gos") and not file.endswith("_Symgroup.txt"):
+        matches.append(file)
+
+if len(matches) == 0:
+    raise ValueError(f"No file found for {d}x{n}")
+elif len(matches) ==1:
+	filename = matches[0]
+else:
+	print(f"Multiple file found for {d}x{n}. Choose between following:")
+	print(matches)
+	v = int(input("Enter Version:"))
+	filename=matches[v-1]
+
+# If multiple matches, pick first---> Fixed...@ayan
+
+path = os.path.join(folder, filename)
+
+print(f"Using file: {filename}")
+
+# -----------------------------
+# 2. Load ETF
+# -----------------------------
+
+def load_etf(filename, d, n):
+    with open(filename, "r") as f:
+        data = [float(x.strip()) for x in f if x.strip()]
+
+    assert len(data) == 2*d*n, "Wrong file size"
+
+    real = data[:d*n]
+    imag = data[d*n:]
+
+    Phi = matrix(CC, d, n)
+
+    for k in range(n):
+        for i in range(d):
+            re = real[k*d + i]
+            im = imag[k*d + i]
+            Phi[i,k] = CC(re, im)   
+
+    return Phi
+
+
+Phi = load_etf(path, d, n)
+G = Phi.conjugate_transpose() * Phi
+#print(Phi)
+print("=== CHECK 1: Gram built ===")
+
+
+
+
+
+
+
+# -----------------------------
+# 3. Directed complete graph
+# -----------------------------
+Ggraph = DiGraph(n)
+
+def quantize_angle(theta): # not using this anymore
+    # map to [0, 2π)
+    if theta < 0:
+        theta += 2*float(pi)
+    return round(theta / tol)
+
+
+def quantize_phase(z, tol=1e-6):
+    z = complex(z)
+    return (round(z.real/tol), round(z.imag/tol))
+
+# -----------------------------
+# 4. Triple product Delta = T[i][j][k]
+# -----------------------------
+T = [[[None for _ in range(n)] for _ in range(n)] for _ in range(n)]
+
+for i in range(n):
+    for j in range(n):
+        for k in range(n):
+            T[i][j][k] = G[i,k] * G[k,j] * G[j,i]
+
+
+def triangle_multiset(i, j):
+    vals = []
+    for k in range(n):
+        if k == i or k == j:
+            continue
+        val = T[i][j][k]
+        vals.append(quantize_phase(val))
+        #val = G[i,k] * G[k,j] * G[j,i]
+        #theta = float(arg(val).n())   # <-- FIX HERE <-- not using quantize_angle anymore, using quantize_phase instead : FIXED... @ayan  
+        #vals.append(quantize_angle(theta))
+    vals.sort()
+    return tuple(vals)
+
+
+
+# -----------------------------
+# 5. Build colored edges
+# -----------------------------
+label_map = {}
+label_counter = 0
+
+for i in range(n):
+    for j in range(n):
+        if i == j:
+            continue
+
+        ms = triangle_multiset(i,j)
+
+        if ms not in label_map:
+            label_map[ms] = label_counter
+            label_counter += 1
+
+        Ggraph.add_edge(i, j, label=label_map[ms])
+
+print("=== CHECK 2: number of colors ===")
+print(len(label_map))
+
+# -----------------------------
+# 6. Automorphism group
+# -----------------------------
+Aut = Ggraph.automorphism_group(edge_labels=True)
+
+print("\n=== Expected Group : GG ez===")
+print("filename:", filename)
+print("Order:", Aut.order())
+
+print("\nGenerators:")
+for g in Aut.gens():
+    print(g)
+
+print("\n=== Further Checks: Verify on Generators ===")
+
+#-----------------------------
+# -----------------------------
+# 7. Verify triple product on generators
+# -----------------------------
+def preserves_triple_product(g, T, tol=1e-8):
+    for i in range(n):
+        gi = g(i)
+        for j in range(n):
+            gj = g(j)
+            for k in range(n):
+                gk = g(k)
+                if abs(T[i][j][k] - T[gi][gj][gk]) > tol:
+                    return False
+    return True
+
+all_ok = True
+
+for g in Aut.gens():
+    if not preserves_triple_product(g, T, tol):
+        print(" Fails for generator:", g)
+        all_ok = False
+    elif  preserves_triple_product(g, T, tol):
+        print(" Passes for generator:", g)
+if not all_ok:
+    print(" \nFurther check needed")
+else:
+    print(" \nAll generators preserve triple product")
+
+
+if not all_ok:
+    if Aut.order() < 100: # Threshold for checking all elements, only for small groups
+        trsymp=[]
+        print("=== Small Group : Checking Elements ===")
+        for g in Aut:
+            if not preserves_triple_product(g, T, tol):
+                print(" Fails for element:", g)
+            elif  preserves_triple_product(g, T, tol):
+                print(" Passes for element:", g)
+                trsymp.append(g)
+        print("\n====================== Final Result ======================")
+        print("Order of symmetric group:", len(trsymp))
+
+    elif Aut.order() < 1000 and Aut.order() >= 100 and d*d==n:  # Threshold for checking cycles, only for SIC case (d^2=n)
+        cycles = [g for g in Aut if g.cycle_type() == [d]*d or g.cycle_type() == [n] ]  # Only check d-cycles, n-cycles
+        trans=[]
+        for g in cycles:
+            if preserves_triple_product(g, T, tol):
+                print(" Passes for cycle:", g)
+                trans.append(g(0))
+                
+        print("\n====================== Final Result ======================")
+        trans.append(0) 
+        print(sorted(list(set(trans))))
