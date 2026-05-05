@@ -44,6 +44,10 @@ cd /path/to/your/project
 ```bash
 sage SymPGoSKopp.sage
 ```
+- Or run in wsl:
+```bash
+wsl sage SymPGoSKopp.sage
+```
 
 - Enter `d` and `n` when prompted
 
