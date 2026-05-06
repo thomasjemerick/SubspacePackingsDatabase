@@ -28,12 +28,18 @@ Transpose[{Flatten[Table[b[i,j],{i,1,d},{j,1,n}]],Im[Flatten[Phi0]]}]
 ]
 (* minimize p-frame potential with QuasiNewton *)
 (* vector list, p, options *)
-MinPhiQNp[Phi0_,p_,opts:OptionsPattern[]]:=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],
-opts,Method->"QuasiNewton",MaxIterations->1000,WorkingPrecision->MachinePrecision]
+MinPhiQNp[Phi0_,p_,opts:OptionsPattern[]]:=Module[{min},
+min=FindMinimum[pFramePotential[PhiVar,p],varcons[Phi0],
+opts,Method->"QuasiNewton",MaxIterations->1000,WorkingPrecision->MachinePrecision];
+{min[[1]],PhiVar/.min[[2]]}
+]
 (* minimize coherence with PrincipalAxis [OFTEN FAILS] *)
 (* vector list, options *)
-MinPhiPA[Phi0_,opts:OptionsPattern[]]:=FindMinimum[Coherence[PhiVar],varcons[Phi0],
-opts,Method->"PrincipalAxis",MaxIterations->Automatic,WorkingPrecision->MachinePrecision]
+MinPhiPA[Phi0_,opts:OptionsPattern[]]:=Module[{min},
+min=FindMinimum[Coherence[PhiVar],varcons[Phi0],
+opts,Method->"PrincipalAxis",MaxIterations->Automatic,WorkingPrecision->MachinePrecision];
+{min[[1]],PhiVar/.min[[2]]}
+]
 (* random seed vector list *)
 rand[]:=RandomReal[NormalDistribution[],{d,n}]+RandomReal[NormalDistribution[],{d,n}]I
 (* ETF conditions *)
@@ -47,5 +53,6 @@ Options[etfRefine]={WorkingPrecision->MachinePrecision,TightnessIdealGenerators-
 etfRefine[Phi0_,OptionsPattern[]]:=Module[{idealGenerators,TID},
 TID=If[OptionValue[TightnessIdealGenerators],tightnessIdealGenerators,{}];
 idealGenerators=Join[unitNormIdealGenerators,equiangularWelchIdealGenerators,TID];
-FindRoot[idealGenerators . RandomInteger[10,{Length[idealGenerators],2d n}],varcons[Phi0],WorkingPrecision->OptionValue[WorkingPrecision]]
+PhiVar/.FindRoot[idealGenerators . RandomInteger[10,{Length[idealGenerators],2d n}],varcons[Phi0],
+WorkingPrecision->OptionValue[WorkingPrecision]]
 ]
