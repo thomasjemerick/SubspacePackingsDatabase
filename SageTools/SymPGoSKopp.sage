@@ -17,7 +17,7 @@ import os
 d = int(input("Enter d: "))
 n = int(input("Enter n: "))
 tol = 1e-5
-folder = "Packings"
+folder = "../Packings"
 prefix = f"etf_{d}x{n}"
 
 
