@@ -202,7 +202,7 @@ if not all_ok:
                 trsymp.append(g)
         print("\n====================== Final Result ======================")
         print("Order of symmetric group:", len(trsymp))
-    elif Aut.order()>=100 and Aut.order() < 100000: # Threshold for prints
+    elif Aut.order()>=100 and Aut.order() < 10000000: # Threshold for prints
         trsymp=[]
         print("=== Small Group : Checking Elements ===")
         for g in Aut:
