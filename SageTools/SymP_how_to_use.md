@@ -155,7 +155,7 @@ All generators preserve triple product
 
 If some generators fail:
 
-#### Small groups: (currently set to less than 100000, chnage in part 7 to update)
+#### Small groups: (currently set to less than 10000000, chnage in part 7 to update)
 - The script checks **all elements** in Aut
 ```text
 === Small Group : Checking Elements ===
