@@ -33,8 +33,8 @@ validatePackings[pattern_String] :=
    Return[]
    ];
   basenames = DeleteDuplicates[FileBaseName /@ files];
-  validators = <|"gos" -> validateGOS, "tp" -> validateTP, 
-    "exa" -> validateEXA|>;
+  validators = <|"gos" -> gosValidate, "tp" -> tpValidate, 
+    "exa" -> exaValidate|>;
   Do[
    Print["=============== ", basename, " ==============="];
    Do[If[FileBaseName[file] === basename,
@@ -53,11 +53,11 @@ are \"*\" ,  \"*.gos\" ,  \"*.tp\" ,  or \"*.exa\" .";
    appropriate pattern. *)
 
 (* .gos files *)
-(* Tests the validy of a .gos ETF given its file name *)
+(* Validates a .gos ETF given its file name *)
 (* Checks that the coherence is equal to the Welch bound,
    that the frame is unit-norm, that the number of distinct
-   triple products is equal tothe number in the file name *)
-validateGOS[filename_] := Module[{d, n, Phi},
+   triple products is equal to the number in the file name *)
+gosValidate[filename_] := Module[{d, n, Phi},
   {d, n} = extractDimensions[filename];
   Phi = importPacking[filename];
   If[RootApproximant@Coherence@N[Phi] != Welch[d, n],
@@ -73,7 +73,7 @@ validateGOS[filename_] := Module[{d, n, Phi},
 (* Checks that the Gram matrix is the Gram matrix of an ETF
    and that the number of distinct triple products is equal
    to the number in the file name *)
-validateTP[filename_] := Module[{d, n, TPPM, GM},
+tpValidate[filename_] := Module[{d, n, TPPM, GM},
   {d, n} = extractDimensions[filename];
   TPPM = ToExpression /@ Import[filename, "List"];
   GM = GMfromTP@arrayFromPositionMap[TPPM];
@@ -90,7 +90,7 @@ validateTP[filename_] := Module[{d, n, TPPM, GM},
 (* Checks that the Gram matrix is the Gram matrix of an ETF
    and that the contents match the contents of the
    corresponding .tp file *)
-validateEXA[filename_] := Module[{d, n, TP1, TP2, GM},
+exaValidate[filename_] := Module[{d, n, TP1, TP2, GM},
   {d, n} = extractDimensions[filename];
   TP1 = importExactTP[filename];
   GM = GMfromTP[TP1];
