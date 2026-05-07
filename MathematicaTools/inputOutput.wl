@@ -7,7 +7,9 @@ packingsDirectory=FileNameJoin[ParentDirectory[NotebookDirectory[]],"Packings"];
 (* Set as present working directory *)
 SetDirectory[packingsDirectory];
 (* Extract packing dimensions (d,n) from file name *)
-extractDimensions[str_String]:=ToExpression[StringCases[str,RegularExpression["(\\d+)x(\\d+)"]->{"$1","$2"}][[-1]]]
+extractDimensions[filename_String]:=ToExpression[StringCases[filename,RegularExpression["(\\d+)x(\\d+)"]->{"$1","$2"}][[1]]]
+(* Extract the number of triple products from file name *)
+extractNumberTP[filename_String]:=ToExpression[StringCases[filename,RegularExpression["(\\d+)x(\\d+)_(\\d+)"]->{"$3"}][[1,1]]]
 (* Function to import Game of Sloanes formatted (.gos) text file of packing *)
 (* Imports at MachinePrecision unless precision is specified *)
 (* Returns transpose of short, fat matrix *)
